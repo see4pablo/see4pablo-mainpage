@@ -6,13 +6,20 @@ Built for **GitHub Pages** (no server required).
 
 ## Local preview
 
-Open `index.html` in a browser, or from this folder:
+With Nix (recommended):
+
+```bash
+nix-shell
+serve          # http://localhost:8080 — optional: serve 9000
+```
+
+Or without Nix, from this folder:
 
 ```bash
 python -m http.server 8080
 ```
 
-Then visit `http://localhost:8080`.
+Then visit `http://localhost:8080`. You can also open `index.html` directly in a browser.
 
 ## GitHub Pages
 
