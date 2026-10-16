@@ -336,13 +336,25 @@ a:hover {
 
 .sq-hint {
   margin: 0.45rem 0 0;
-  font-size: 0.9rem;
-  max-width: 28rem;
+  max-width: 32rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  opacity: 0.8;
 }
 
+.sq-hint.code,
 .sq-hint code {
   font-family: var(--font-ui);
-  font-size: 0.85em;
+  font-size: 0.9em;
+}
+
+.sq-out-table thead tr:first-child th[colspan] {
+  border-bottom: none;
+}
+
+.sq-out-table thead tr:last-child th {
+  font-weight: 400;
+  background: rgba(246, 243, 238, 0.55);
 }
 
 .table-scroll {

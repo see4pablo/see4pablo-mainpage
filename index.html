@@ -222,36 +222,49 @@
                 <p class="sq-label">Queries</p>
                 <pre class="sq-block"><code>Diabetes = YES
 Diabetes = YES AND Smoker = YES</code></pre>
-                <p class="sq-label">Output <span>(one row per query → paste into Excel)</span></p>
+                <p class="sq-label">Output <span>(CSV → paste into Excel)</span></p>
                 <div class="table-scroll">
                   <table class="sq-out-table">
                     <thead>
                       <tr>
+                        <th scope="col">Age</th>
+                        <th scope="col" colspan="2">40-44</th>
+                        <th scope="col" colspan="2">55-59</th>
+                        <th scope="col">…</th>
+                      </tr>
+                      <tr>
                         <th scope="col">Query</th>
-                        <th scope="col">40–44<br /><span>M · F</span></th>
-                        <th scope="col">55–59<br /><span>M · F</span></th>
+                        <th scope="col">M</th>
+                        <th scope="col">F</th>
+                        <th scope="col">M</th>
+                        <th scope="col">F</th>
                         <th scope="col">…</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <th scope="row">Diabetes = YES</th>
-                        <td>1 · 1</td>
-                        <td>0 · 1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
                         <td>…</td>
                       </tr>
                       <tr>
-                        <th scope="row">+ Smoker</th>
-                        <td>0 · 1</td>
-                        <td>0 · 0</td>
+                        <th scope="row">Diabetes = YES AND Smoker = YES</th>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
                         <td>…</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                <p class="sq-hint">
-                  Each cell is men · women in that age band. Clinic files may
-                  use <code>SI</code>/<code>NO</code> instead of YES/NO.
+                <p class="meta-row sq-hint">
+                  Row 1 = age bands (each band spans M, F). Row 2 = sex labels.
+                  Then one data row per query. Commas separate cells — no double
+                  spaces needed. Clinic files may use <code>SI</code>/<code>NO</code>.
                 </p>
               </div>
               <div class="tool-links">
