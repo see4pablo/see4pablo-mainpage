@@ -345,6 +345,50 @@ a:hover {
   font-size: 0.85em;
 }
 
+.table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sq-out-table {
+  width: 100%;
+  max-width: 28rem;
+  border-collapse: collapse;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.sq-out-table th,
+.sq-out-table td {
+  border: 1px solid var(--ink);
+  padding: 0.4rem 0.5rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.sq-out-table thead th {
+  font-weight: 500;
+  background: rgba(200, 217, 207, 0.35);
+}
+
+.sq-out-table thead th span {
+  display: block;
+  margin-top: 0.15rem;
+  font-weight: 400;
+  opacity: 0.65;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+}
+
+.sq-out-table tbody th {
+  text-align: left;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
 /* —— sheetquery browser app —— */
 
 .sq-web {

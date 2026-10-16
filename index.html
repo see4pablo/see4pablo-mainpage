@@ -222,16 +222,36 @@
                 <p class="sq-label">Queries</p>
                 <pre class="sq-block"><code>Diabetes = YES
 Diabetes = YES AND Smoker = YES</code></pre>
-                <p class="sq-label">Output <span>(paste the number rows)</span></p>
-                <pre class="sq-block"><code># age bands →  40-44 | 55-59 | …
-# each band →  M, F  | M, F  | …
-1, 1, 0, 1, …
-0, 1, 0, 0, …</code></pre>
+                <p class="sq-label">Output <span>(one row per query → paste into Excel)</span></p>
+                <div class="table-scroll">
+                  <table class="sq-out-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Query</th>
+                        <th scope="col">40–44<br /><span>M · F</span></th>
+                        <th scope="col">55–59<br /><span>M · F</span></th>
+                        <th scope="col">…</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">Diabetes = YES</th>
+                        <td>1 · 1</td>
+                        <td>0 · 1</td>
+                        <td>…</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">+ Smoker</th>
+                        <td>0 · 1</td>
+                        <td>0 · 0</td>
+                        <td>…</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
                 <p class="sq-hint">
-                  <code>M</code> = male, <code>F</code> = female. Comment lines
-                  explain the layout; you paste the number rows into Excel or
-                  Sheets. Real clinic files may use Spanish labels
-                  (<code>SI</code>/<code>NO</code>); the app matches the cells.
+                  Each cell is men · women in that age band. Clinic files may
+                  use <code>SI</code>/<code>NO</code> instead of YES/NO.
                 </p>
               </div>
               <div class="tool-links">
