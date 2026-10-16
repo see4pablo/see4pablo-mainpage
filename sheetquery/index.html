@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SheetQuery — download · see4pablo</title>
+    <title>SheetQuery — see4pablo</title>
     <meta
       name="description"
-      content="Download SheetQuery for Windows or Mac. Filter spreadsheets locally; paste counts into Excel or Sheets."
+      content="Run SheetQuery in your browser, or download for Windows/Mac. Data stays on your machine."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,6 +15,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../assets/css/styles.css" />
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.27.5/full/pyodide.js"></script>
   </head>
   <body>
     <div class="site">
@@ -22,17 +23,59 @@
         <a class="back" href="../">← see4pablo</a>
         <h1 class="page-title">SheetQuery</h1>
         <p class="tagline">
-          A small desktop tool for filtering spreadsheets and counting people by
-          age band and sex. Ready to paste into Excel or Google Sheets.
+          Filter a spreadsheet and count by age band and sex. Runs in this tab —
+          your file is not uploaded to any server.
         </p>
-        <p class="meta-row">dev.see4pablo.cl/sheetquery · runs on your machine</p>
+        <p class="meta-row">
+          logic from
+          <a
+            href="https://github.com/see4pablo/sheetquery"
+            rel="noopener noreferrer"
+            >github.com/see4pablo/sheetquery</a
+          >
+        </p>
       </header>
 
       <main>
+        <h2 class="section-label">Run in the browser</h2>
+        <p class="sq-web-note">
+          Uses the same Python filters as the desktop tool (loaded live from the
+          SheetQuery repo via Pyodide). CSV only for now. Chilean clinic files
+          often use <code>SI</code>/<code>NO</code> in cells — queries match
+          whatever is in the file.
+        </p>
+
+        <div class="sq-web">
+          <label class="sq-field">
+            <span>1. CSV file</span>
+            <input id="sq-file" type="file" accept=".csv,text/csv" />
+          </label>
+
+          <label class="sq-field">
+            <span>2. Queries <em>(one per line)</em></span>
+            <textarea id="sq-queries" rows="4" spellcheck="false">
+DIABETES = SI
+DIABETES = SI AND FUMADOR = SI</textarea>
+          </label>
+
+          <div class="sq-actions">
+            <button id="sq-run" type="button" class="sq-run-btn">Run</button>
+            <button id="sq-download" type="button" class="sq-dl-btn" hidden>
+              Download batch CSV
+            </button>
+          </div>
+
+          <p id="sq-status" class="sq-status" aria-live="polite">
+            Idle — press Run (Python loads on first use).
+          </p>
+
+          <pre id="sq-output" class="sq-block sq-output" aria-label="Batch output"></pre>
+        </div>
+
+        <h2 class="section-label">Desktop package (optional)</h2>
         <p>
-          Downloads are offline packages. You put your data file next to the
-          app; nothing is uploaded to this website. Workbooks may contain
-          identifiable health data — keep them private.
+          Offline zip for Windows / Mac — no browser. Windows build is pending
+          (needs a Windows PC or CI). Mac likewise needs a Mac build.
         </p>
 
         <div class="download-grid">
@@ -42,7 +85,7 @@
             id="dl-windows"
           >
             <span>Windows</span>
-            <small>.zip · ready to unzip &amp; run</small>
+            <small>.zip · pending</small>
           </a>
           <a
             class="download-btn"
@@ -50,27 +93,18 @@
             id="dl-mac"
           >
             <span>Mac</span>
-            <small>.zip · when the build is published</small>
+            <small>.zip · pending</small>
           </a>
         </div>
 
-        <h2 class="section-label">After download</h2>
-        <ol class="steps">
-          <li>Unzip the folder.</li>
-          <li>Put your spreadsheet in the <code>data</code> folder.</li>
-          <li>Run the app (or follow the README inside the zip).</li>
-          <li>Open the <code>batch_….csv</code> in <code>output</code> and paste into your sheet.</li>
-        </ol>
-
         <p class="note">
-          Source and docs:
+          Source:
           <a
             href="https://github.com/see4pablo/sheetquery"
             rel="noopener noreferrer"
             >github.com/see4pablo/sheetquery</a
-          >.
-          Drop the release zips into <code>downloads/</code> on this site (or
-          point these buttons at a GitHub Release URL) when builds are ready.
+          >
+          · <code>browser_api.py</code> is the entry the page imports.
         </p>
       </main>
 
@@ -78,8 +112,8 @@
         <p>Part of see4pablo · Useful tools</p>
       </footer>
     </div>
+    <script src="../assets/js/sheetquery-web.js"></script>
     <script>
-      /* Soft-disable missing local zips during local preview / empty downloads/ */
       async function markIfMissing(id, path) {
         const el = document.getElementById(id);
         if (!el) return;
