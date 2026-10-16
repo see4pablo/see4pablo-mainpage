@@ -49,10 +49,16 @@
           <div class="sq-block-section">
             <p class="sq-field-label">Configuration</p>
 
-            <label class="sq-field sq-field-inline">
-              <span>Age segmentation</span>
-              <input id="sq-age-on" type="checkbox" checked />
-            </label>
+            <div class="sq-seg-row">
+              <label class="sq-field sq-field-inline">
+                <span>Age segmentation</span>
+                <input id="sq-age-on" type="checkbox" checked />
+              </label>
+              <label class="sq-field sq-field-inline">
+                <span>Gender segmentation</span>
+                <input id="sq-gender-on" type="checkbox" checked />
+              </label>
+            </div>
 
             <div class="sq-age-heads" aria-hidden="true">
               <span>Lower age</span>
@@ -85,12 +91,9 @@
                 aria-label="Higher age (allows +)"
               />
             </div>
-            <p id="sq-age-explain" class="meta-row sq-age-explain"></p>
-
-            <label class="sq-field sq-field-inline">
-              <span>Gender segmentation</span>
-              <input id="sq-gender-on" type="checkbox" checked />
-            </label>
+            <p id="sq-age-explain" class="meta-row sq-age-explain">
+              age bands → 15-19 | 20-24 | 25-29 | … | 80 and above
+            </p>
           </div>
 
           <div class="sq-block-section">
@@ -143,7 +146,7 @@
           ></pre>
         </div>
 
-        <p class="sq-dani-note">
+        <p class="meta-row sq-dani-note">
           Hola Dani — if you ever land here: thanks for everything. This tool grew
           out of the queries we built together.
         </p>

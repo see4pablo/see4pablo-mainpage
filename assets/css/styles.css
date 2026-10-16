@@ -378,10 +378,24 @@ a:hover {
   opacity: 0.55;
 }
 
+.sq-seg-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0 0 0.85rem;
+}
+
+@media (max-width: 520px) {
+  .sq-seg-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .sq-field-inline {
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 0.75rem;
+  margin-bottom: 0;
 }
 
 .sq-field-inline input[type="checkbox"] {
@@ -453,7 +467,8 @@ a:hover {
 }
 
 .sq-age-explain {
-  margin: 0 0 1rem;
+  margin: 0.35rem 0 0;
+  min-height: 1.2em;
 }
 
 .sq-presets-label {
@@ -493,11 +508,9 @@ a:hover {
 }
 
 .sq-dani-note {
-  margin: 2rem 0 0;
-  max-width: 32rem;
-  font-size: 0.85rem;
-  line-height: 1.45;
-  opacity: 0.55;
+  margin-top: 2rem;
+  max-width: 36rem;
+  opacity: 0.75;
 }
 
 .sq-actions {

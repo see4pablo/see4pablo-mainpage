@@ -47,20 +47,41 @@
   let lastOutput = "";
   let baseSegmentationText = "";
   let baseAliasesText = "";
+  let statusToken = 0;
 
   const setStatus = (text, kind = "") => {
+    statusToken += 1;
+    statusEl.textContent = text;
+    statusEl.dataset.kind = kind;
+    return statusToken;
+  };
+
+  /** Soft status that will not overwrite a newer message (e.g. preset append). */
+  const setStatusIfCurrent = (token, text, kind = "") => {
+    if (token !== statusToken) return;
     statusEl.textContent = text;
     statusEl.dataset.kind = kind;
   };
 
   async function fetchText(path) {
-    const res = await fetch(CDN + path, { cache: "no-cache" });
-    if (!res.ok) {
-      throw new Error(
-        `Could not load ${path} from sheetquery@${REF} (${res.status})`
-      );
+    const urls = [
+      CDN + path,
+      `https://raw.githubusercontent.com/see4pablo/sheetquery/${REF}/${path}`,
+    ];
+    let lastErr = null;
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, { cache: "no-cache" });
+        if (!res.ok) {
+          lastErr = new Error(`Could not load ${path} (${res.status})`);
+          continue;
+        }
+        return await res.text();
+      } catch (err) {
+        lastErr = err;
+      }
     }
-    return res.text();
+    throw lastErr || new Error(`Could not load ${path}`);
   }
 
   function setConfKey(text, key, value) {
@@ -177,7 +198,10 @@
       }
       const current = queriesEl.value.replace(/\s+$/, "");
       queriesEl.value = current ? `${current}\n${chunk}` : chunk;
-      setStatus(`Appended ${label} into Expressions.`, "ok");
+      queriesEl.focus();
+      queriesEl.scrollTop = queriesEl.scrollHeight;
+      const n = chunk.split("\n").filter(Boolean).length;
+      setStatus(`Added ${n} lines from ${label} into Expressions.`, "ok");
     } catch (err) {
       console.error(err);
       setStatus(err.message || String(err), "err");
@@ -187,14 +211,16 @@
   async function ensurePyodide() {
     if (pyodidePromise) return pyodidePromise;
     pyodidePromise = (async () => {
-      setStatus("Loading Python in the browser (first time can take a minute)…");
+      const boot = setStatus(
+        "Loading Python in the browser (first time can take a minute)…"
+      );
       const pyodide = await loadPyodide({
         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.5/full/",
       });
-      setStatus("Installing pandas…");
+      setStatusIfCurrent(boot, "Installing pandas…");
       await pyodide.loadPackage(["pandas", "numpy"]);
 
-      setStatus("Fetching SheetQuery from GitHub…");
+      setStatusIfCurrent(boot, "Fetching SheetQuery from GitHub…");
       pyodide.FS.mkdirTree("/sheetquery/config");
       for (const path of MODULES) {
         const text = await fetchText(path);
@@ -213,7 +239,11 @@ os.chdir("/sheetquery")
 if "/sheetquery" not in sys.path:
     sys.path.insert(0, "/sheetquery")
 `);
-      setStatus("Ready — upload a CSV, edit Expressions, then Run.", "ok");
+      setStatusIfCurrent(
+        boot,
+        "Ready — upload a CSV, edit Expressions, then Run.",
+        "ok"
+      );
       return pyodide;
     })();
     return pyodidePromise;
