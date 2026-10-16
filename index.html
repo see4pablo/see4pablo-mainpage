@@ -214,11 +214,49 @@
               </p>
               <div class="sq-demo">
                 <p class="sq-label">Input</p>
-                <pre class="sq-block"><code>Age,Sex,Diabetes,Smoker
-42,M,YES,NO
-43,F,YES,YES
-41,M,NO,NO
-55,F,YES,NO</code></pre>
+                <div class="table-scroll">
+                  <table class="sq-out-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Age</th>
+                        <th scope="col">Sex</th>
+                        <th scope="col">Diabetes</th>
+                        <th scope="col">Smoker</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Ana Pérez</td>
+                        <td>42</td>
+                        <td>F</td>
+                        <td>YES</td>
+                        <td>NO</td>
+                      </tr>
+                      <tr>
+                        <td>Luis Soto</td>
+                        <td>43</td>
+                        <td>M</td>
+                        <td>YES</td>
+                        <td>YES</td>
+                      </tr>
+                      <tr>
+                        <td>Camila Ríos</td>
+                        <td>41</td>
+                        <td>F</td>
+                        <td>NO</td>
+                        <td>NO</td>
+                      </tr>
+                      <tr>
+                        <td>Diego Vega</td>
+                        <td>55</td>
+                        <td>M</td>
+                        <td>YES</td>
+                        <td>NO</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
                 <p class="sq-label">Queries</p>
                 <pre class="sq-block"><code>Diabetes = YES
 Diabetes = YES AND Smoker = YES</code></pre>
