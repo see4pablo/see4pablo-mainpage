@@ -6,7 +6,7 @@
     <title>SheetQuery — see4pablo</title>
     <meta
       name="description"
-      content="Run SheetQuery in your browser. Data stays on your machine."
+      content="Filter spreadsheets and count by age band and sex — SheetQuery in the browser."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,11 +23,11 @@
         <a class="back" href="../">← see4pablo</a>
         <h1 class="page-title">SheetQuery</h1>
         <p class="tagline">
-          Filter a spreadsheet and count by age band and sex. Runs in this tab —
-          your file is not uploaded to any server.
+          Filter a spreadsheet with short expressions and get counts by age band
+          and sex, ready to paste into Excel or Sheets.
         </p>
         <p class="meta-row">
-          logic from
+          all logic and code imported directly from
           <a
             href="https://github.com/see4pablo/sheetquery"
             rel="noopener noreferrer"
@@ -48,48 +48,48 @@
 
           <div class="sq-block-section">
             <p class="sq-field-label">Configuration</p>
-            <label class="sq-check">
+
+            <label class="sq-field sq-field-inline">
+              <span>Age segmentation</span>
               <input id="sq-age-on" type="checkbox" checked />
-              Age segmentation
             </label>
-            <div class="sq-age-row">
-              <label class="sq-mini">
-                <span>Lower age</span>
-                <input
-                  id="sq-age-start"
-                  type="number"
-                  min="0"
-                  step="1"
-                  value="15"
-                />
-              </label>
-              <label class="sq-mini">
-                <span>Band size</span>
-                <input
-                  id="sq-age-step"
-                  type="number"
-                  min="1"
-                  step="1"
-                  value="5"
-                />
-              </label>
-              <label class="sq-mini">
-                <span>Open from</span>
-                <input
-                  id="sq-age-open"
-                  type="number"
-                  min="0"
-                  step="1"
-                  value="80"
-                />
-              </label>
+
+            <div class="sq-age-heads" aria-hidden="true">
+              <span>Lower age</span>
+              <span>Band size</span>
+              <span>Higher age (allows +)</span>
             </div>
-            <p class="sq-example">
-              e.g. 15 · 5 · 80 → 15-19 | 20-24 | … | 80 and above
-            </p>
-            <label class="sq-check">
+            <div class="sq-age-row">
+              <input
+                id="sq-age-start"
+                type="text"
+                inputmode="numeric"
+                value="15"
+                spellcheck="false"
+                aria-label="Lower age"
+              />
+              <input
+                id="sq-age-step"
+                type="text"
+                inputmode="numeric"
+                value="5"
+                spellcheck="false"
+                aria-label="Band size"
+              />
+              <input
+                id="sq-age-open"
+                type="text"
+                inputmode="numeric"
+                value="80"
+                spellcheck="false"
+                aria-label="Higher age (allows +)"
+              />
+            </div>
+            <p id="sq-age-explain" class="meta-row sq-age-explain"></p>
+
+            <label class="sq-field sq-field-inline">
+              <span>Gender segmentation</span>
               <input id="sq-gender-on" type="checkbox" checked />
-              Gender segmentation
             </label>
           </div>
 
@@ -142,16 +142,6 @@
             aria-label="Batch output"
           ></pre>
         </div>
-
-        <p class="note">
-          Source:
-          <a
-            href="https://github.com/see4pablo/sheetquery"
-            rel="noopener noreferrer"
-            >github.com/see4pablo/sheetquery</a
-          >
-          · configs and query catalogs are fetched from that repo at run time.
-        </p>
 
         <p class="sq-dani-note">
           Hola Dani — if you ever land here: thanks for everything. This tool grew

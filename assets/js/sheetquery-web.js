@@ -38,6 +38,7 @@
   const ageStartEl = document.getElementById("sq-age-start");
   const ageStepEl = document.getElementById("sq-age-step");
   const ageOpenEl = document.getElementById("sq-age-open");
+  const ageExplainEl = document.getElementById("sq-age-explain");
   const genderOnEl = document.getElementById("sq-gender-on");
 
   if (!statusEl || !runBtn || !fileInput || !queriesEl || !outEl) return;
@@ -69,14 +70,53 @@
     return `${text.trimEnd()}\n${line}\n`;
   }
 
+  function parseAgeParts() {
+    const start = Number.parseInt(String(ageStartEl?.value || "").trim(), 10);
+    const step = Number.parseInt(String(ageStepEl?.value || "").trim(), 10);
+    const openRaw = String(ageOpenEl?.value || "").trim().replace(/\+$/, "");
+    const openFrom = Number.parseInt(openRaw, 10);
+    return {
+      start: Number.isFinite(start) ? start : null,
+      step: Number.isFinite(step) && step > 0 ? step : null,
+      openFrom: Number.isFinite(openFrom) ? openFrom : null,
+    };
+  }
+
   function ageRangeFromInputs() {
-    const start = Number.parseInt(ageStartEl && ageStartEl.value, 10);
-    const step = Number.parseInt(ageStepEl && ageStepEl.value, 10);
-    const openFrom = Number.parseInt(ageOpenEl && ageOpenEl.value, 10);
-    const s = Number.isFinite(start) ? start : 15;
-    const st = Number.isFinite(step) && step > 0 ? step : 5;
-    const o = Number.isFinite(openFrom) ? openFrom : 80;
+    const { start, step, openFrom } = parseAgeParts();
+    const s = start ?? 15;
+    const st = step ?? 5;
+    const o = openFrom ?? 80;
     return `[${s}:${st}:${o}+]`;
+  }
+
+  function describeAgeBands() {
+    if (ageOnEl && !ageOnEl.checked) {
+      return "age bands off — counts will not split by age";
+    }
+    const { start, step, openFrom } = parseAgeParts();
+    if (start === null || step === null || openFrom === null) {
+      return "age bands → enter lower age, band size, and higher age";
+    }
+    if (openFrom < start) {
+      return "age bands → higher age should be ≥ lower age";
+    }
+    if ((openFrom - start) % step !== 0) {
+      return `age bands → ${openFrom} is not reachable from ${start} with steps of ${step}`;
+    }
+    const bands = [];
+    for (let low = start; low < openFrom; low += step) {
+      bands.push(`${low}-${low + step - 1}`);
+      if (bands.length >= 3) break;
+    }
+    const more = start + bands.length * step < openFrom;
+    const mid = bands.join(" | ") + (more ? " | …" : "");
+    return `age bands → ${mid}${mid ? " | " : ""}${openFrom} and above`;
+  }
+
+  function refreshAgeExplain() {
+    if (!ageExplainEl) return;
+    ageExplainEl.textContent = describeAgeBands();
   }
 
   function applyAgeRangeToInputs(raw) {
@@ -87,6 +127,7 @@
     if (ageStartEl) ageStartEl.value = m[1];
     if (ageStepEl) ageStepEl.value = m[2];
     if (ageOpenEl) ageOpenEl.value = m[3];
+    refreshAgeExplain();
   }
 
   function buildSegmentationText() {
@@ -189,6 +230,13 @@ if "/sheetquery" not in sys.path:
     btn.addEventListener("click", () => appendPreset(btn.dataset.preset));
   });
 
+  [ageStartEl, ageStepEl, ageOpenEl].forEach((el) => {
+    if (!el) return;
+    el.addEventListener("input", refreshAgeExplain);
+  });
+  if (ageOnEl) ageOnEl.addEventListener("change", refreshAgeExplain);
+  refreshAgeExplain();
+
   (async () => {
     try {
       baseSegmentationText = await fetchText("config/segmentation.conf");
@@ -203,6 +251,7 @@ if "/sheetquery" not in sys.path:
       if (genSeg && genderOnEl) {
         genderOnEl.checked = !/^(false|no|0|off)$/i.test(genSeg[1].trim());
       }
+      refreshAgeExplain();
     } catch (err) {
       console.error(err);
       setStatus(

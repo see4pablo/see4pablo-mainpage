@@ -378,6 +378,19 @@ a:hover {
   opacity: 0.55;
 }
 
+.sq-field-inline {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sq-field-inline input[type="checkbox"] {
+  width: 0.95rem;
+  height: 0.95rem;
+  accent-color: var(--ink);
+  justify-self: end;
+}
+
 .sq-visually-hidden {
   position: absolute;
   width: 1px;
@@ -392,7 +405,6 @@ a:hover {
 
 .sq-field input[type="file"],
 .sq-field input[type="text"],
-.sq-field input[type="number"],
 .sq-field textarea {
   font-family: var(--font-ui);
   font-size: 0.8rem;
@@ -410,56 +422,38 @@ a:hover {
   line-height: 1.45;
 }
 
-.sq-check {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0 0 0.65rem;
+.sq-age-heads {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin: 0.15rem 0 0.35rem;
   font-family: var(--font-ui);
-  font-size: 0.78rem;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  cursor: pointer;
-}
-
-.sq-check input {
-  width: 0.95rem;
-  height: 0.95rem;
-  accent-color: var(--ink);
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .sq-age-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.55rem;
-  margin: 0 0 0.4rem;
+  gap: 0.45rem;
+  margin: 0 0 0.35rem;
 }
 
-.sq-mini {
-  display: grid;
-  gap: 0.25rem;
-  font-family: var(--font-ui);
-  font-size: 0.65rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.sq-mini input {
+.sq-age-row input {
   width: 100%;
+  min-width: 0;
   font-family: var(--font-ui);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   letter-spacing: 0.02em;
   color: var(--ink);
   border: 1px solid var(--ink);
   background: rgba(246, 243, 238, 0.55);
-  padding: 0.45rem 0.5rem;
+  padding: 0.4rem 0.45rem;
 }
 
-.sq-example {
-  margin: 0 0 0.85rem;
-  font-size: 0.78rem;
-  line-height: 1.35;
-  opacity: 0.7;
+.sq-age-explain {
+  margin: 0 0 1rem;
 }
 
 .sq-presets-label {
