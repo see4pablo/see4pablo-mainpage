@@ -1,7 +1,7 @@
 /**
  * Run SheetQuery in the browser via Pyodide.
- * Python modules + configs are fetched from see4pablo/sheetquery on GitHub
- * (jsDelivr). Spreadsheet bytes never leave this page.
+ * Python modules, configs, and query presets are fetched from
+ * see4pablo/sheetquery on GitHub (jsDelivr). Spreadsheet bytes never leave.
  */
 (() => {
   const REF = "master";
@@ -29,11 +29,16 @@
   const queriesEl = document.getElementById("sq-queries");
   const outEl = document.getElementById("sq-output");
   const downloadBtn = document.getElementById("sq-download");
+  const ageOnEl = document.getElementById("sq-age-on");
+  const ageRangeEl = document.getElementById("sq-age-range");
+  const genderOnEl = document.getElementById("sq-gender-on");
 
   if (!statusEl || !runBtn || !fileInput || !queriesEl || !outEl) return;
 
   let pyodidePromise = null;
   let lastOutput = "";
+  let baseSegmentationText = "";
+  let baseAliasesText = "";
 
   const setStatus = (text, kind = "") => {
     statusEl.textContent = text;
@@ -43,9 +48,65 @@
   async function fetchText(path) {
     const res = await fetch(CDN + path, { cache: "no-cache" });
     if (!res.ok) {
-      throw new Error(`Could not load ${path} from sheetquery@${REF} (${res.status})`);
+      throw new Error(
+        `Could not load ${path} from sheetquery@${REF} (${res.status})`
+      );
     }
     return res.text();
+  }
+
+  function setConfKey(text, key, value) {
+    const line = `${key}=${value}`;
+    const re = new RegExp(`^${key}=.*$`, "m");
+    if (re.test(text)) return text.replace(re, line);
+    return `${text.trimEnd()}\n${line}\n`;
+  }
+
+  function buildSegmentationText() {
+    let text = baseSegmentationText;
+    if (!text) {
+      throw new Error("Segmentation config not loaded yet.");
+    }
+    const ageOn = ageOnEl && ageOnEl.checked ? "true" : "false";
+    const genderOn = genderOnEl && genderOnEl.checked ? "true" : "false";
+    const ageRange = (ageRangeEl && ageRangeEl.value.trim()) || "[15:5:80+]";
+    text = setConfKey(text, "AGE_SEGMENTATION", ageOn);
+    text = setConfKey(text, "GENDER_SEGMENTATION", genderOn);
+    text = setConfKey(text, "AGE_RANGE", ageRange);
+    return text;
+  }
+
+  function expressionsFromCatalog(data) {
+    let items;
+    if (data && Array.isArray(data.queries)) items = data.queries;
+    else if (data && Array.isArray(data.consultas)) items = data.consultas;
+    else if (Array.isArray(data)) items = data;
+    else {
+      throw new Error("Unexpected queries JSON shape.");
+    }
+    const lines = [];
+    for (const item of items) {
+      if (typeof item === "string" && item.trim()) {
+        lines.push(item.trim());
+      } else if (item && typeof item === "object") {
+        const expr = item.expression || item.expresion;
+        if (expr && String(expr).trim()) lines.push(String(expr).trim());
+      }
+    }
+    return lines.join("\n");
+  }
+
+  async function loadPreset(name) {
+    setStatus(`Loading queries/${name}.json from SheetQuery…`);
+    try {
+      const raw = await fetchText(`queries/${name}.json`);
+      const data = JSON.parse(raw);
+      queriesEl.value = expressionsFromCatalog(data);
+      setStatus(`Loaded ${name} from the SheetQuery repo.`, "ok");
+    } catch (err) {
+      console.error(err);
+      setStatus(err.message || String(err), "err");
+    }
   }
 
   async function ensurePyodide() {
@@ -67,6 +128,8 @@
       for (const path of CONFIGS) {
         const text = await fetchText(path);
         pyodide.FS.writeFile(`/sheetquery/${path}`, text);
+        if (path.endsWith("segmentation.conf")) baseSegmentationText = text;
+        if (path.endsWith("column_aliases.conf")) baseAliasesText = text;
       }
 
       pyodide.runPython(`
@@ -74,13 +137,8 @@ import os, sys
 os.chdir("/sheetquery")
 if "/sheetquery" not in sys.path:
     sys.path.insert(0, "/sheetquery")
-from browser_api import configure
-configure(
-    aliases_text=open("config/column_aliases.conf", encoding="utf-8").read(),
-    segmentation_text=open("config/segmentation.conf", encoding="utf-8").read(),
-)
 `);
-      setStatus("Ready — choose a CSV and run.", "ok");
+      setStatus("Ready — choose a CSV, optional preset, then Run.", "ok");
       return pyodide;
     })();
     return pyodidePromise;
@@ -92,6 +150,35 @@ configure(
       .map((line) => line.trim())
       .filter((line) => line.length > 0);
   }
+
+  document.querySelectorAll("[data-preset]").forEach((btn) => {
+    btn.addEventListener("click", () => loadPreset(btn.dataset.preset));
+  });
+
+  // Prefetch configs early so AGE_RANGE UI matches the repo; load dani_y as default.
+  (async () => {
+    try {
+      baseSegmentationText = await fetchText("config/segmentation.conf");
+      baseAliasesText = await fetchText("config/column_aliases.conf");
+      const match = baseSegmentationText.match(/^AGE_RANGE=(.*)$/m);
+      if (match && ageRangeEl) ageRangeEl.value = match[1].trim();
+      const ageSeg = baseSegmentationText.match(/^AGE_SEGMENTATION=(.*)$/m);
+      if (ageSeg && ageOnEl) {
+        ageOnEl.checked = !/^(false|no|0|off)$/i.test(ageSeg[1].trim());
+      }
+      const genSeg = baseSegmentationText.match(/^GENDER_SEGMENTATION=(.*)$/m);
+      if (genSeg && genderOnEl) {
+        genderOnEl.checked = !/^(false|no|0|off)$/i.test(genSeg[1].trim());
+      }
+      await loadPreset("dani_y");
+    } catch (err) {
+      console.error(err);
+      setStatus(
+        "Could not prefetch SheetQuery configs/presets. Check the network.",
+        "err"
+      );
+    }
+  })();
 
   runBtn.addEventListener("click", async () => {
     runBtn.disabled = true;
@@ -106,20 +193,37 @@ configure(
       }
       const queries = parseQueries(queriesEl.value);
       if (!queries.length) {
-        setStatus("Enter at least one query.", "err");
+        setStatus("Enter at least one query (or load dani_y / dani_y_2).", "err");
         return;
       }
 
       const pyodide = await ensurePyodide();
+      if (!baseAliasesText) {
+        baseAliasesText = await fetchText("config/column_aliases.conf");
+      }
+      if (!baseSegmentationText) {
+        baseSegmentationText = await fetchText("config/segmentation.conf");
+      }
+
       setStatus("Running queries…");
       const csvText = await file.text();
+      const segmentationText = buildSegmentationText();
+
       pyodide.globals.set("csv_text", csvText);
       pyodide.globals.set("query_list", queries);
       pyodide.globals.set("source_name", file.name);
+      pyodide.globals.set("aliases_text", baseAliasesText);
+      pyodide.globals.set("segmentation_text", segmentationText);
 
       const result = pyodide.runPython(`
 from browser_api import run_batch_csv
-run_batch_csv(csv_text, list(query_list), source_name=str(source_name))
+run_batch_csv(
+    csv_text,
+    list(query_list),
+    source_name=str(source_name),
+    aliases_text=str(aliases_text),
+    segmentation_text=str(segmentation_text),
+)
 `);
       lastOutput = String(result);
       outEl.textContent = lastOutput;
@@ -144,12 +248,9 @@ run_batch_csv(csv_text, list(query_list), source_name=str(source_name))
     URL.revokeObjectURL(url);
   });
 
-  // Warm Pyodide in the background after paint.
   if ("requestIdleCallback" in window) {
     requestIdleCallback(() => {
-      ensurePyodide().catch(() => {
-        /* status already set on demand */
-      });
+      ensurePyodide().catch(() => {});
     });
   }
 })();

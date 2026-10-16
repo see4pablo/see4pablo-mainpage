@@ -6,7 +6,7 @@
     <title>SheetQuery — see4pablo</title>
     <meta
       name="description"
-      content="Run SheetQuery in your browser, or download for Windows/Mac. Data stays on your machine."
+      content="Run SheetQuery in your browser. Data stays on your machine."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -37,12 +37,17 @@
       </header>
 
       <main>
+        <p class="sq-dani-hello">
+          Hola Dani — if you’re reading this: this page exists because of the
+          work we did together at the CESFAM. Gracias por todo 🇨🇱
+        </p>
+
         <h2 class="section-label">Run in the browser</h2>
         <p class="sq-web-note">
-          Uses the same Python filters as the desktop tool (loaded live from the
-          SheetQuery repo via Pyodide). CSV only for now. Chilean clinic files
-          often use <code>SI</code>/<code>NO</code> in cells — queries match
-          whatever is in the file.
+          Same Python filters as the SheetQuery repo (loaded live via Pyodide).
+          CSV only for now. Chilean clinic files often use
+          <code>SI</code>/<code>NO</code> — queries match whatever is in the
+          cells.
         </p>
 
         <div class="sq-web">
@@ -51,12 +56,56 @@
             <input id="sq-file" type="file" accept=".csv,text/csv" />
           </label>
 
-          <label class="sq-field">
-            <span>2. Queries <em>(one per line)</em></span>
-            <textarea id="sq-queries" rows="4" spellcheck="false">
-DIABETES = SI
-DIABETES = SI AND FUMADOR = SI</textarea>
-          </label>
+          <fieldset class="sq-config">
+            <legend>2. Configuration</legend>
+            <p class="sq-config-hint">
+              Age bands match the CESFAM setup Dani uses:
+              <code>[15:5:80+]</code> → 15–19, 20–24, …, 80+.
+            </p>
+            <label class="sq-check">
+              <input id="sq-age-on" type="checkbox" checked />
+              Age segmentation
+            </label>
+            <label class="sq-field">
+              <span>AGE_RANGE</span>
+              <input
+                id="sq-age-range"
+                type="text"
+                value="[15:5:80+]"
+                spellcheck="false"
+                autocomplete="off"
+              />
+            </label>
+            <label class="sq-check">
+              <input id="sq-gender-on" type="checkbox" checked />
+              Gender segmentation
+            </label>
+          </fieldset>
+
+          <div class="sq-queries-block">
+            <p class="sq-field-label">3. Queries</p>
+            <p class="sq-config-hint">
+              Presets load from the SheetQuery repo
+              (<code>queries/</code> — not copied into this site.
+            </p>
+            <div class="sq-presets" role="group" aria-label="Query presets">
+              <button type="button" class="sq-preset-btn" data-preset="dani_y">
+                dani_y
+              </button>
+              <button type="button" class="sq-preset-btn" data-preset="dani_y_2">
+                dani_y_2
+              </button>
+            </div>
+            <label class="sq-field">
+              <span>Expressions <em>(one per line)</em></span>
+              <textarea
+                id="sq-queries"
+                rows="8"
+                spellcheck="false"
+                placeholder="Load dani_y or dani_y_2, or type your own…"
+              ></textarea>
+            </label>
+          </div>
 
           <div class="sq-actions">
             <button id="sq-run" type="button" class="sq-run-btn">Run</button>
@@ -69,32 +118,11 @@ DIABETES = SI AND FUMADOR = SI</textarea>
             Idle — press Run (Python loads on first use).
           </p>
 
-          <pre id="sq-output" class="sq-block sq-output" aria-label="Batch output"></pre>
-        </div>
-
-        <h2 class="section-label">Desktop package (optional)</h2>
-        <p>
-          Offline zip for Windows / Mac — no browser. Windows build is pending
-          (needs a Windows PC or CI). Mac likewise needs a Mac build.
-        </p>
-
-        <div class="download-grid">
-          <a
-            class="download-btn"
-            href="../downloads/SheetQuery-windows.zip"
-            id="dl-windows"
-          >
-            <span>Windows</span>
-            <small>.zip · pending</small>
-          </a>
-          <a
-            class="download-btn"
-            href="../downloads/SheetQuery-macos.zip"
-            id="dl-mac"
-          >
-            <span>Mac</span>
-            <small>.zip · pending</small>
-          </a>
+          <pre
+            id="sq-output"
+            class="sq-block sq-output"
+            aria-label="Batch output"
+          ></pre>
         </div>
 
         <p class="note">
@@ -104,7 +132,7 @@ DIABETES = SI AND FUMADOR = SI</textarea>
             rel="noopener noreferrer"
             >github.com/see4pablo/sheetquery</a
           >
-          · <code>browser_api.py</code> is the entry the page imports.
+          · configs and query catalogs are fetched from that repo at run time.
         </p>
       </main>
 
@@ -113,22 +141,5 @@ DIABETES = SI AND FUMADOR = SI</textarea>
       </footer>
     </div>
     <script src="../assets/js/sheetquery-web.js"></script>
-    <script>
-      async function markIfMissing(id, path) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        try {
-          const res = await fetch(path, { method: "HEAD" });
-          if (!res.ok) throw new Error("missing");
-        } catch {
-          el.setAttribute("aria-disabled", "true");
-          el.classList.add("is-disabled");
-          const small = el.querySelector("small");
-          if (small) small.textContent = "file not uploaded yet";
-        }
-      }
-      markIfMissing("dl-windows", "../downloads/SheetQuery-windows.zip");
-      markIfMissing("dl-mac", "../downloads/SheetQuery-macos.zip");
-    </script>
   </body>
 </html>
