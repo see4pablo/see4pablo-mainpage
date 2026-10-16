@@ -184,8 +184,17 @@
     return lines.join("\n");
   }
 
-  /** Append preset lines into the Expressions textarea (does not replace). */
-  async function appendPreset(name) {
+  function setRunLoading(on, label = "Run") {
+    if (!runBtn) return;
+    runBtn.classList.toggle("is-loading", on);
+    runBtn.disabled = on;
+    runBtn.setAttribute("aria-busy", on ? "true" : "false");
+    const labelEl = runBtn.querySelector(".sq-run-label");
+    if (labelEl) labelEl.textContent = label;
+  }
+
+  /** Replace Expressions with a preset from the SheetQuery repo. */
+  async function loadPreset(name) {
     const label = PRESET_LABELS[name] || name;
     setStatus(`Loading ${label} from SheetQuery…`);
     try {
@@ -196,12 +205,11 @@
         setStatus(`${label} had no expressions.`, "err");
         return;
       }
-      const current = queriesEl.value.replace(/\s+$/, "");
-      queriesEl.value = current ? `${current}\n${chunk}` : chunk;
+      queriesEl.value = chunk;
       queriesEl.focus();
-      queriesEl.scrollTop = queriesEl.scrollHeight;
+      queriesEl.scrollTop = 0;
       const n = chunk.split("\n").filter(Boolean).length;
-      setStatus(`Added ${n} lines from ${label} into Expressions.`, "ok");
+      setStatus(`Loaded ${n} lines from ${label} into Expressions.`, "ok");
     } catch (err) {
       console.error(err);
       setStatus(err.message || String(err), "err");
@@ -209,42 +217,57 @@
   }
 
   async function ensurePyodide() {
-    if (pyodidePromise) return pyodidePromise;
+    if (pyodidePromise) {
+      setRunLoading(true, "Loading…");
+      try {
+        return await pyodidePromise;
+      } finally {
+        /* caller may keep the spinner for Running… */
+      }
+    }
     pyodidePromise = (async () => {
+      setRunLoading(true, "Loading…");
       const boot = setStatus(
         "Loading Python in the browser (first time can take a minute)…"
       );
-      const pyodide = await loadPyodide({
-        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.5/full/",
-      });
-      setStatusIfCurrent(boot, "Installing pandas…");
-      await pyodide.loadPackage(["pandas", "numpy"]);
+      try {
+        const pyodide = await loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.5/full/",
+        });
+        setStatusIfCurrent(boot, "Installing pandas…");
+        await pyodide.loadPackage(["pandas", "numpy"]);
 
-      setStatusIfCurrent(boot, "Fetching SheetQuery from GitHub…");
-      pyodide.FS.mkdirTree("/sheetquery/config");
-      for (const path of MODULES) {
-        const text = await fetchText(path);
-        pyodide.FS.writeFile(`/sheetquery/${path}`, text);
-      }
-      for (const path of CONFIGS) {
-        const text = await fetchText(path);
-        pyodide.FS.writeFile(`/sheetquery/${path}`, text);
-        if (path.endsWith("segmentation.conf")) baseSegmentationText = text;
-        if (path.endsWith("column_aliases.conf")) baseAliasesText = text;
-      }
+        setStatusIfCurrent(boot, "Fetching SheetQuery from GitHub…");
+        pyodide.FS.mkdirTree("/sheetquery/config");
+        for (const path of MODULES) {
+          const text = await fetchText(path);
+          pyodide.FS.writeFile(`/sheetquery/${path}`, text);
+        }
+        for (const path of CONFIGS) {
+          const text = await fetchText(path);
+          pyodide.FS.writeFile(`/sheetquery/${path}`, text);
+          if (path.endsWith("segmentation.conf")) baseSegmentationText = text;
+          if (path.endsWith("column_aliases.conf")) baseAliasesText = text;
+        }
 
-      pyodide.runPython(`
+        pyodide.runPython(`
 import os, sys
 os.chdir("/sheetquery")
 if "/sheetquery" not in sys.path:
     sys.path.insert(0, "/sheetquery")
 `);
-      setStatusIfCurrent(
-        boot,
-        "Ready — upload a CSV, edit Expressions, then Run.",
-        "ok"
-      );
-      return pyodide;
+        setStatusIfCurrent(
+          boot,
+          "Ready — upload a CSV, edit Expressions, then Run.",
+          "ok"
+        );
+        return pyodide;
+      } catch (err) {
+        pyodidePromise = null;
+        throw err;
+      } finally {
+        setRunLoading(false, "Run");
+      }
     })();
     return pyodidePromise;
   }
@@ -257,7 +280,7 @@ if "/sheetquery" not in sys.path:
   }
 
   document.querySelectorAll("[data-preset]").forEach((btn) => {
-    btn.addEventListener("click", () => appendPreset(btn.dataset.preset));
+    btn.addEventListener("click", () => loadPreset(btn.dataset.preset));
   });
 
   [ageStartEl, ageStepEl, ageOpenEl].forEach((el) => {
@@ -292,7 +315,6 @@ if "/sheetquery" not in sys.path:
   })();
 
   runBtn.addEventListener("click", async () => {
-    runBtn.disabled = true;
     downloadBtn.hidden = true;
     outEl.textContent = "";
     lastOutput = "";
@@ -305,13 +327,16 @@ if "/sheetquery" not in sys.path:
       const queries = parseQueries(queriesEl.value);
       if (!queries.length) {
         setStatus(
-          "Add at least one expression (type or append REMP / Diabetes-REMP).",
+          "Add at least one expression (type or load REMP / Diabetes-REMP).",
           "err"
         );
         return;
       }
 
+      setRunLoading(true, "Loading…");
       const pyodide = await ensurePyodide();
+      setRunLoading(true, "Running…");
+
       if (!baseAliasesText) {
         baseAliasesText = await fetchText("config/column_aliases.conf");
       }
@@ -347,7 +372,7 @@ run_batch_csv(
       console.error(err);
       setStatus(err.message || String(err), "err");
     } finally {
-      runBtn.disabled = false;
+      setRunLoading(false, "Run");
     }
   });
 

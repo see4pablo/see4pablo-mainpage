@@ -104,7 +104,7 @@
                 type="button"
                 class="sq-preset-btn"
                 data-preset="dani_y"
-                title="Append REMP queries"
+                title="Load REMP queries"
               >
                 REMP
               </button>
@@ -112,7 +112,7 @@
                 type="button"
                 class="sq-preset-btn"
                 data-preset="dani_y_2"
-                title="Append Diabetes-REMP queries"
+                title="Load Diabetes-REMP queries"
               >
                 Diabetes-REMP
               </button>
@@ -123,13 +123,16 @@
                 id="sq-queries"
                 rows="8"
                 spellcheck="false"
-                placeholder="Type queries, or append a preset above…"
+                placeholder="Type queries, or load a preset above…"
               ></textarea>
             </label>
           </div>
 
           <div class="sq-actions">
-            <button id="sq-run" type="button" class="sq-run-btn">Run</button>
+            <button id="sq-run" type="button" class="sq-run-btn">
+              <span class="sq-run-spinner" aria-hidden="true"></span>
+              <span class="sq-run-label">Run</span>
+            </button>
             <button id="sq-download" type="button" class="sq-dl-btn" hidden>
               Download batch CSV
             </button>
