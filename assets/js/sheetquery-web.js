@@ -23,6 +23,11 @@
     "config/column_aliases.conf",
   ];
 
+  const PRESET_LABELS = {
+    dani_y: "REMP",
+    dani_y_2: "Diabetes-REMP",
+  };
+
   const statusEl = document.getElementById("sq-status");
   const runBtn = document.getElementById("sq-run");
   const fileInput = document.getElementById("sq-file");
@@ -30,7 +35,9 @@
   const outEl = document.getElementById("sq-output");
   const downloadBtn = document.getElementById("sq-download");
   const ageOnEl = document.getElementById("sq-age-on");
-  const ageRangeEl = document.getElementById("sq-age-range");
+  const ageStartEl = document.getElementById("sq-age-start");
+  const ageStepEl = document.getElementById("sq-age-step");
+  const ageOpenEl = document.getElementById("sq-age-open");
   const genderOnEl = document.getElementById("sq-gender-on");
 
   if (!statusEl || !runBtn || !fileInput || !queriesEl || !outEl) return;
@@ -62,6 +69,26 @@
     return `${text.trimEnd()}\n${line}\n`;
   }
 
+  function ageRangeFromInputs() {
+    const start = Number.parseInt(ageStartEl && ageStartEl.value, 10);
+    const step = Number.parseInt(ageStepEl && ageStepEl.value, 10);
+    const openFrom = Number.parseInt(ageOpenEl && ageOpenEl.value, 10);
+    const s = Number.isFinite(start) ? start : 15;
+    const st = Number.isFinite(step) && step > 0 ? step : 5;
+    const o = Number.isFinite(openFrom) ? openFrom : 80;
+    return `[${s}:${st}:${o}+]`;
+  }
+
+  function applyAgeRangeToInputs(raw) {
+    const m = String(raw || "")
+      .trim()
+      .match(/^\[?\s*(\d+)\s*:\s*(\d+)\s*:\s*(\d+)\s*\+?\s*\]?$/);
+    if (!m) return;
+    if (ageStartEl) ageStartEl.value = m[1];
+    if (ageStepEl) ageStepEl.value = m[2];
+    if (ageOpenEl) ageOpenEl.value = m[3];
+  }
+
   function buildSegmentationText() {
     let text = baseSegmentationText;
     if (!text) {
@@ -69,10 +96,9 @@
     }
     const ageOn = ageOnEl && ageOnEl.checked ? "true" : "false";
     const genderOn = genderOnEl && genderOnEl.checked ? "true" : "false";
-    const ageRange = (ageRangeEl && ageRangeEl.value.trim()) || "[15:5:80+]";
     text = setConfKey(text, "AGE_SEGMENTATION", ageOn);
     text = setConfKey(text, "GENDER_SEGMENTATION", genderOn);
-    text = setConfKey(text, "AGE_RANGE", ageRange);
+    text = setConfKey(text, "AGE_RANGE", ageRangeFromInputs());
     return text;
   }
 
@@ -96,13 +122,21 @@
     return lines.join("\n");
   }
 
-  async function loadPreset(name) {
-    setStatus(`Loading queries/${name}.json from SheetQuery…`);
+  /** Append preset lines into the Expressions textarea (does not replace). */
+  async function appendPreset(name) {
+    const label = PRESET_LABELS[name] || name;
+    setStatus(`Loading ${label} from SheetQuery…`);
     try {
       const raw = await fetchText(`queries/${name}.json`);
       const data = JSON.parse(raw);
-      queriesEl.value = expressionsFromCatalog(data);
-      setStatus(`Loaded ${name} from the SheetQuery repo.`, "ok");
+      const chunk = expressionsFromCatalog(data);
+      if (!chunk) {
+        setStatus(`${label} had no expressions.`, "err");
+        return;
+      }
+      const current = queriesEl.value.replace(/\s+$/, "");
+      queriesEl.value = current ? `${current}\n${chunk}` : chunk;
+      setStatus(`Appended ${label} into Expressions.`, "ok");
     } catch (err) {
       console.error(err);
       setStatus(err.message || String(err), "err");
@@ -138,7 +172,7 @@ os.chdir("/sheetquery")
 if "/sheetquery" not in sys.path:
     sys.path.insert(0, "/sheetquery")
 `);
-      setStatus("Ready — choose a CSV, optional preset, then Run.", "ok");
+      setStatus("Ready — upload a CSV, edit Expressions, then Run.", "ok");
       return pyodide;
     })();
     return pyodidePromise;
@@ -152,16 +186,15 @@ if "/sheetquery" not in sys.path:
   }
 
   document.querySelectorAll("[data-preset]").forEach((btn) => {
-    btn.addEventListener("click", () => loadPreset(btn.dataset.preset));
+    btn.addEventListener("click", () => appendPreset(btn.dataset.preset));
   });
 
-  // Prefetch configs early so AGE_RANGE UI matches the repo; load dani_y as default.
   (async () => {
     try {
       baseSegmentationText = await fetchText("config/segmentation.conf");
       baseAliasesText = await fetchText("config/column_aliases.conf");
       const match = baseSegmentationText.match(/^AGE_RANGE=(.*)$/m);
-      if (match && ageRangeEl) ageRangeEl.value = match[1].trim();
+      if (match) applyAgeRangeToInputs(match[1].trim());
       const ageSeg = baseSegmentationText.match(/^AGE_SEGMENTATION=(.*)$/m);
       if (ageSeg && ageOnEl) {
         ageOnEl.checked = !/^(false|no|0|off)$/i.test(ageSeg[1].trim());
@@ -170,11 +203,10 @@ if "/sheetquery" not in sys.path:
       if (genSeg && genderOnEl) {
         genderOnEl.checked = !/^(false|no|0|off)$/i.test(genSeg[1].trim());
       }
-      await loadPreset("dani_y");
     } catch (err) {
       console.error(err);
       setStatus(
-        "Could not prefetch SheetQuery configs/presets. Check the network.",
+        "Could not prefetch SheetQuery configs. Check the network.",
         "err"
       );
     }
@@ -193,7 +225,10 @@ if "/sheetquery" not in sys.path:
       }
       const queries = parseQueries(queriesEl.value);
       if (!queries.length) {
-        setStatus("Enter at least one query (or load dani_y / dani_y_2).", "err");
+        setStatus(
+          "Add at least one expression (type or append REMP / Diabetes-REMP).",
+          "err"
+        );
         return;
       }
 

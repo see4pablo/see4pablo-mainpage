@@ -37,72 +37,90 @@
       </header>
 
       <main>
-        <p class="sq-dani-hello">
-          Hola Dani — if you’re reading this: this page exists because of the
-          work we did together at the CESFAM. Gracias por todo 🇨🇱
-        </p>
-
-        <h2 class="section-label">Run in the browser</h2>
-        <p class="sq-web-note">
-          Same Python filters as the SheetQuery repo (loaded live via Pyodide).
-          CSV only for now. Chilean clinic files often use
-          <code>SI</code>/<code>NO</code> — queries match whatever is in the
-          cells.
-        </p>
-
         <div class="sq-web">
-          <label class="sq-field">
-            <span>1. CSV file</span>
-            <input id="sq-file" type="file" accept=".csv,text/csv" />
-          </label>
+          <div class="sq-block-section">
+            <p class="sq-field-label">Upload CSV</p>
+            <label class="sq-field">
+              <span class="sq-visually-hidden">Choose file</span>
+              <input id="sq-file" type="file" accept=".csv,text/csv" />
+            </label>
+          </div>
 
-          <fieldset class="sq-config">
-            <legend>2. Configuration</legend>
-            <p class="sq-config-hint">
-              Age bands match the CESFAM setup Dani uses:
-              <code>[15:5:80+]</code> → 15–19, 20–24, …, 80+.
-            </p>
+          <div class="sq-block-section">
+            <p class="sq-field-label">Configuration</p>
             <label class="sq-check">
               <input id="sq-age-on" type="checkbox" checked />
               Age segmentation
             </label>
-            <label class="sq-field">
-              <span>AGE_RANGE</span>
-              <input
-                id="sq-age-range"
-                type="text"
-                value="[15:5:80+]"
-                spellcheck="false"
-                autocomplete="off"
-              />
-            </label>
+            <div class="sq-age-row">
+              <label class="sq-mini">
+                <span>Lower age</span>
+                <input
+                  id="sq-age-start"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value="15"
+                />
+              </label>
+              <label class="sq-mini">
+                <span>Band size</span>
+                <input
+                  id="sq-age-step"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value="5"
+                />
+              </label>
+              <label class="sq-mini">
+                <span>Open from</span>
+                <input
+                  id="sq-age-open"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value="80"
+                />
+              </label>
+            </div>
+            <p class="sq-example">
+              e.g. 15 · 5 · 80 → 15-19 | 20-24 | … | 80 and above
+            </p>
             <label class="sq-check">
               <input id="sq-gender-on" type="checkbox" checked />
               Gender segmentation
             </label>
-          </fieldset>
+          </div>
 
-          <div class="sq-queries-block">
-            <p class="sq-field-label">3. Queries</p>
-            <p class="sq-config-hint">
-              Presets load from the SheetQuery repo
-              (<code>queries/</code> — not copied into this site.
-            </p>
-            <div class="sq-presets" role="group" aria-label="Query presets">
-              <button type="button" class="sq-preset-btn" data-preset="dani_y">
-                dani_y
+          <div class="sq-block-section">
+            <p class="sq-field-label">Queries</p>
+            <p class="sq-presets-label">Dani Preloaded Queries</p>
+            <div class="sq-presets" role="group" aria-label="Dani Preloaded Queries">
+              <button
+                type="button"
+                class="sq-preset-btn"
+                data-preset="dani_y"
+                title="Append REMP queries"
+              >
+                REMP
               </button>
-              <button type="button" class="sq-preset-btn" data-preset="dani_y_2">
-                dani_y_2
+              <button
+                type="button"
+                class="sq-preset-btn"
+                data-preset="dani_y_2"
+                title="Append Diabetes-REMP queries"
+              >
+                Diabetes-REMP
               </button>
             </div>
             <label class="sq-field">
-              <span>Expressions <em>(one per line)</em></span>
+              <span>Expressions <em>(one per line — this is what Run sends)</em></span>
               <textarea
                 id="sq-queries"
                 rows="8"
                 spellcheck="false"
-                placeholder="Load dani_y or dani_y_2, or type your own…"
+                placeholder="Type queries, or append a preset above…"
               ></textarea>
             </label>
           </div>
@@ -133,6 +151,11 @@
             >github.com/see4pablo/sheetquery</a
           >
           · configs and query catalogs are fetched from that repo at run time.
+        </p>
+
+        <p class="sq-dani-note">
+          Hola Dani — if you ever land here: thanks for everything. This tool grew
+          out of the queries we built together.
         </p>
       </main>
 
