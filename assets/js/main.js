@@ -13,7 +13,7 @@
       panel.hidden = panel.dataset.panel !== name;
     });
     const url = new URL(window.location.href);
-    if (name === "cv") {
+    if (name === "home") {
       url.searchParams.delete("tab");
     } else {
       url.searchParams.set("tab", name);
@@ -25,7 +25,19 @@
     btn.addEventListener("click", () => select(btn.dataset.tab));
   });
 
+  // In-page links like ?tab=cv from the Home panel
+  document.querySelectorAll('a[href^="?tab="]').forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const href = new URL(link.href, window.location.href);
+      const tab = href.searchParams.get("tab");
+      if (tab && buttons.some((b) => b.dataset.tab === tab)) {
+        event.preventDefault();
+        select(tab);
+      }
+    });
+  });
+
   const params = new URLSearchParams(window.location.search);
-  const initial = params.get("tab") || "cv";
-  select(buttons.some((b) => b.dataset.tab === initial) ? initial : "cv");
+  const initial = params.get("tab") || "home";
+  select(buttons.some((b) => b.dataset.tab === initial) ? initial : "home");
 })();

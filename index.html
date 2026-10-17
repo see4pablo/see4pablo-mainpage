@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>see4pablo — about & tools</title>
+    <title>see4pablo — software</title>
     <meta
       name="description"
-      content="Pablo Aliaga — software engineer. About me, useful tools, and downloads. Santiago, Chile."
+      content="Pablo Aliaga — software engineer. Tools, curriculum, and notes from Chile."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -21,8 +21,8 @@
       <header class="brand-block">
         <h1 class="brand"><span class="brand-mark">see4pablo</span></h1>
         <p class="tagline">
-          Pablo Aliaga — software engineer. Small tools and things I build from
-          Chile.
+          Hey — this is my software engineering page. I’ll keep here the tools,
+          notes, and work related to this side of what I do.
         </p>
         <p class="meta-row">
           <a href="mailto:pablooaliaga@gmail.com">pablooaliaga@gmail.com</a>
@@ -49,12 +49,25 @@
               class="tab-btn"
               type="button"
               role="tab"
+              id="tab-home"
+              data-tab="home"
+              aria-controls="panel-home"
+              aria-selected="true"
+            >
+              Home
+            </button>
+          </li>
+          <li role="presentation">
+            <button
+              class="tab-btn"
+              type="button"
+              role="tab"
               id="tab-cv"
               data-tab="cv"
               aria-controls="panel-cv"
-              aria-selected="true"
+              aria-selected="false"
             >
-              About me
+              Curriculum
             </button>
           </li>
           <li role="presentation">
@@ -76,10 +89,31 @@
       <main>
         <section
           class="panel"
+          id="panel-home"
+          role="tabpanel"
+          data-panel="home"
+          aria-labelledby="tab-home"
+        >
+          <p class="lede">
+            I’m Pablo, a software engineer. This site is a quiet home for that
+            facet — curriculum, small tools I ship, and whatever else belongs
+            next to the code. More coming over time.
+          </p>
+          <p class="meta-row">
+            Start with
+            <a href="?tab=cv">Curriculum</a>
+            or
+            <a href="?tab=tools">Useful tools</a>.
+          </p>
+        </section>
+
+        <section
+          class="panel"
           id="panel-cv"
           role="tabpanel"
           data-panel="cv"
           aria-labelledby="tab-cv"
+          hidden
         >
           <p class="lede">
             Software engineer with over five years building backend systems and
