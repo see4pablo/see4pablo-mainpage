@@ -35,6 +35,7 @@ body.md-body a {
 .md-site .brand-block,
 .md-site .tabs,
 .md-site .panel,
+.md-site .page-head,
 .md-site .site-footer {
   animation: rise 0.7s ease-out both;
   width: 100%;
