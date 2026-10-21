@@ -1,0 +1,361 @@
+/**
+ * Material Design 3–inspired layer for the mainpage.
+ * Warm ink/paper seed (not default purple). SheetQuery keeps styles.css.
+ */
+
+:root {
+  --md-sys-color-primary: #1b4d3e;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #c8e6d8;
+  --md-sys-color-on-primary-container: #002117;
+  --md-sys-color-secondary: #4a6358;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #cce8db;
+  --md-sys-color-on-secondary-container: #062017;
+  --md-sys-color-surface: #f7f4ef;
+  --md-sys-color-surface-container: #efebe4;
+  --md-sys-color-surface-container-high: #e8e4dc;
+  --md-sys-color-on-surface: #1b1c19;
+  --md-sys-color-on-surface-variant: #404943;
+  --md-sys-color-outline: #707973;
+  --md-sys-color-outline-variant: #c0c9c1;
+  --md-sys-typescale-brand: "Fraunces", "Roboto Serif", Georgia, serif;
+  --md-sys-typescale-body: "Roboto", system-ui, sans-serif;
+  --md-sys-typescale-label: "Roboto", system-ui, sans-serif;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-elevation-1: 0 1px 2px rgba(27, 28, 25, 0.08),
+    0 1px 3px 1px rgba(27, 28, 25, 0.06);
+  --md-breakpoint-compact: 600px;
+  --md-breakpoint-medium: 905px;
+}
+
+body.md-body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--md-sys-color-on-surface);
+  background: var(--md-sys-color-surface);
+  background-image: none;
+  font-family: var(--md-sys-typescale-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.md-body a {
+  color: var(--md-sys-color-primary);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+body.md-body a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.md-site {
+  width: min(100% - 2rem, 72rem);
+  margin: 0 auto;
+  padding: 1.25rem 0 3rem;
+}
+
+@media (min-width: 600px) {
+  .md-site {
+    width: min(100% - 3rem, 72rem);
+    padding: 1.75rem 0 4rem;
+  }
+}
+
+/* —— Top brand —— */
+
+.md-site .brand-block {
+  margin-bottom: 1.5rem;
+  animation: none;
+}
+
+.md-site .brand {
+  margin: 0;
+  font-family: var(--md-sys-typescale-brand);
+  font-size: clamp(2.25rem, 1.6rem + 2.5vw, 3.5rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--md-sys-color-on-surface);
+}
+
+.md-site .brand-mark {
+  display: inline-block;
+  border-bottom: 3px solid var(--md-sys-color-primary);
+  padding-bottom: 0.04em;
+  transform: none;
+}
+
+.md-site .tagline {
+  margin: 0.75rem 0 0;
+  max-width: 36rem;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.md-site .meta-row {
+  margin-top: 0.65rem;
+  font-family: var(--md-sys-typescale-label);
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.md-site .meta-row a {
+  color: var(--md-sys-color-primary);
+}
+
+/* —— Material secondary tabs —— */
+
+.md-site .tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0 0 1.75rem;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  animation: none;
+}
+
+.md-site .tab-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0.85rem 1rem;
+  margin: 0;
+  font-family: var(--md-sys-typescale-label);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  opacity: 1;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  border-radius: var(--md-sys-shape-corner-small) var(--md-sys-shape-corner-small)
+    0 0;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.md-site .tab-btn:hover {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+  color: var(--md-sys-color-on-surface);
+}
+
+.md-site .tab-btn[aria-selected="true"] {
+  color: var(--md-sys-color-primary);
+  border-bottom-color: var(--md-sys-color-primary);
+  opacity: 1;
+}
+
+.md-site .panel {
+  max-width: 48rem;
+  animation: none;
+}
+
+.md-site .lede {
+  margin: 0 0 1.25rem;
+  font-size: 1.125rem;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* —— CV bits under MD body —— */
+
+.md-site .section-label {
+  margin: 2rem 0 0.85rem;
+  font-family: var(--md-sys-typescale-label);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.md-site .skills li {
+  font-family: var(--md-sys-typescale-label);
+  font-size: 0.8125rem;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-container);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+}
+
+.md-site .timeline::before {
+  background: var(--md-sys-color-outline-variant);
+}
+
+.md-site .timeline-item::before {
+  border-color: var(--md-sys-color-primary);
+  background: var(--md-sys-color-surface);
+}
+
+.md-site .timeline-title {
+  font-family: var(--md-sys-typescale-brand);
+}
+
+.md-site .timeline-when {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* —— Tool cards —— */
+
+.md-site .tool-list {
+  display: grid;
+  gap: 1.25rem;
+  max-width: none;
+}
+
+.md-site .tool {
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: var(--md-sys-elevation-1);
+  padding: 1.25rem 1.25rem 1.35rem;
+}
+
+@media (min-width: 600px) {
+  .md-site .tool {
+    padding: 1.5rem 1.5rem 1.6rem;
+  }
+}
+
+.md-site .tool h3 {
+  margin: 0 0 0.5rem;
+  font-family: var(--md-sys-typescale-brand);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--md-sys-color-on-surface);
+}
+
+.md-site .tool > p {
+  margin: 0 0 1rem;
+  max-width: 40rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Material layout grid: exactly 3 columns for phone screenshots */
+.md-site .shot-row {
+  list-style: none;
+  margin: 0 auto 1.25rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 36rem;
+}
+
+@media (min-width: 600px) {
+  .md-site .shot-row {
+    gap: 0.75rem;
+    max-width: 40rem;
+  }
+}
+
+.md-site .shot-row > li {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.md-site .shot-row img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--md-sys-shape-corner-small);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  filter: grayscale(1);
+  opacity: 0.95;
+  background: var(--md-sys-color-surface);
+}
+
+/* Material buttons row */
+.md-site .tool-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.65rem;
+  font-family: var(--md-sys-typescale-label);
+  font-size: 0.875rem;
+}
+
+.md-site .tool-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid var(--md-sys-color-outline);
+  color: var(--md-sys-color-primary);
+  background: transparent;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.md-site .tool-links a:hover {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent);
+  text-decoration: none;
+}
+
+.md-site .tool-links a:first-child {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+}
+
+.md-site .tool-links a:first-child:hover {
+  box-shadow: var(--md-sys-elevation-1);
+  background: color-mix(
+    in srgb,
+    var(--md-sys-color-primary) 88%,
+    #000 12%
+  );
+}
+
+.md-site .sq-demo {
+  margin: 0 0 1rem;
+  max-width: 100%;
+}
+
+.md-site .sq-label {
+  font-family: var(--md-sys-typescale-label);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.md-site .sq-block,
+.md-site .sq-out-table th,
+.md-site .sq-out-table td {
+  border-color: var(--md-sys-color-outline-variant);
+}
+
+.md-site .sq-out-table {
+  max-width: 100%;
+  font-family: var(--md-sys-typescale-label);
+}
+
+.md-site .site-footer {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  font-family: var(--md-sys-typescale-label);
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-on-surface-variant);
+  max-width: none;
+  animation: none;
+}
+
+.md-site .material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  vertical-align: middle;
+  font-size: 1.15rem;
+}
