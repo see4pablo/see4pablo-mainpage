@@ -214,8 +214,46 @@ body.md-body a {
   box-shadow: none;
 }
 
-.md-site .timeline-title {
+.md-site .timeline-title,
+.md-site .page-title {
   font-family: var(--font-display);
+}
+
+.md-site .back,
+.md-site .sq-field,
+.md-site .sq-field-label,
+.md-site .sq-presets-label,
+.md-site .sq-age-heads,
+.md-site .sq-run-btn,
+.md-site .sq-dl-btn,
+.md-site .sq-preset-btn,
+.md-site .sq-block,
+.md-site .sq-out-table {
+  font-family: var(--font-ui);
+}
+
+/* —— SheetQuery under the same Material body (50% centered) —— */
+
+.md-site .sq-web,
+.md-site .sq-demo,
+.md-site .sq-dani-note,
+.md-site .sq-hint,
+.md-site .sq-out-table,
+.md-site .download-grid {
+  max-width: none;
+  width: 100%;
+}
+
+.md-site .sq-field input[type="file"],
+.md-site .sq-field input[type="text"],
+.md-site .sq-field textarea,
+.md-site .sq-age-row input,
+.md-site .sq-preset-btn,
+.md-site .sq-run-btn,
+.md-site .sq-dl-btn,
+.md-site .sq-block,
+.md-site .download-btn {
+  border-radius: 0;
 }
 
 .md-site .material-symbols-outlined {
