@@ -66,9 +66,12 @@ a:hover {
 
 .site {
   width: min(100% - 2 * var(--pad), var(--wide));
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: clamp(1.5rem, 5vw, 3rem) 0 4rem;
 }
+
+/* Mainpage (.md-site) overrides width to 50% in md3.css */
 
 /* —— brand / header —— */
 
