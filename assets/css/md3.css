@@ -1,36 +1,46 @@
 /**
  * Light layout layer on top of styles.css.
- * Keeps the site minimal / square / formal — only tightens
- * responsive screenshot grid and centering.
+ * Material-style centered body: ~50% of the viewport, formal fonts
+ * from styles.css (Fraunces / Source Serif 4 / DM Mono).
  */
 
 :root {
-  --md-content: 42rem;
-  --md-shots: 26rem;
-}
-
-/* Restore formal type; do not replace the paper look from styles.css */
-body.md-body {
-  /* inherit paper background + serif stack from styles.css */
+  --md-content-width: 50%;
+  --md-shots: min(100%, 26rem);
 }
 
 body.md-body a {
   color: var(--ink);
 }
 
+/* Material body container: half the screen, centered */
+.md-site.site,
 .md-site {
-  width: min(100% - 2 * var(--pad), var(--wide));
-  margin: 0 auto;
+  width: var(--md-content-width);
+  max-width: none;
+  margin-left: auto;
+  margin-right: auto;
   padding: clamp(1.5rem, 5vw, 3rem) 0 4rem;
+  box-sizing: border-box;
+}
+
+/* Compact (phone): use almost full width with side padding */
+@media (max-width: 600px) {
+  .md-site.site,
+  .md-site {
+    width: min(100% - 2rem, 100%);
+  }
 }
 
 .md-site .brand-block,
 .md-site .tabs,
+.md-site .panel,
 .md-site .site-footer {
   animation: rise 0.7s ease-out both;
-  max-width: var(--md-content);
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .md-site .tabs {
@@ -39,13 +49,6 @@ body.md-body a {
 
 .md-site .site-footer {
   animation-delay: 0.16s;
-  max-width: var(--wide);
-}
-
-.md-site .panel {
-  max-width: var(--md-content);
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .md-site .brand {
@@ -127,11 +130,15 @@ body.md-body a {
 }
 
 .md-site .tool > p {
-  max-width: 34rem;
+  max-width: none;
   color: var(--ink);
 }
 
-/* Screenshots: 3 columns, centered, square corners */
+.md-site .tagline {
+  max-width: none;
+}
+
+/* Screenshots: 3 columns, centered within the 50% column */
 .md-site .shot-row {
   list-style: none;
   margin: 0.5rem auto 1.25rem;
