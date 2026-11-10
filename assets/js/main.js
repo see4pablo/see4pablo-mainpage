@@ -13,7 +13,7 @@
       panel.hidden = panel.dataset.panel !== name;
     });
     const url = new URL(window.location.href);
-    if (name === "home") {
+    if (name === "cv") {
       url.searchParams.delete("tab");
     } else {
       url.searchParams.set("tab", name);
@@ -38,6 +38,6 @@
   });
 
   const params = new URLSearchParams(window.location.search);
-  const initial = params.get("tab") || "home";
+  const initial = params.get("tab") || "cv";
   select(buttons.some((b) => b.dataset.tab === initial) ? initial : "home");
 })();
